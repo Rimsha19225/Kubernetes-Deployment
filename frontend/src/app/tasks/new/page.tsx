@@ -19,15 +19,37 @@ const NewTaskPage: React.FC = () => {
     category: 'other',
     due_date: ''
   });
+
+  // State for time component of due date
+  const [dueDateTime, setDueDateTime] = useState<string>('00:00');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Helper function to format date with time in Pakistan timezone
+  const formatDateWithTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Asia/Karachi', // Pakistan timezone
+      timeZoneName: 'short'
+    });
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+
+    if (name === 'due_time') {
+      setDueDateTime(value);
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   useEffect(() => {
@@ -49,10 +71,19 @@ const NewTaskPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // Combine date and time for due_date if date is provided
+      let combinedDueDate: string | undefined;
+      if (formData.due_date) {
+        const timePart = dueDateTime || '00:00'; // Use selected time or default
+        const dateTimeStr = `${formData.due_date}T${timePart}:00`;
+        combinedDueDate = new Date(dateTimeStr).toISOString();
+      }
+
       // Capitalize the first letter of the title before creating the task
       const capitalizedFormData = {
         ...formData,
-        title: formData.title.charAt(0).toUpperCase() + formData.title.slice(1)
+        title: formData.title.charAt(0).toUpperCase() + formData.title.slice(1),
+        due_date: combinedDueDate  // Override with combined date-time
       };
 
       // Actually create the task using the API
@@ -202,22 +233,45 @@ const NewTaskPage: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="recurring" className="block text-sm font-medium text-gray-700 mb-2">
-                  Recurring:
+                <label htmlFor="due_time" className="block text-sm font-medium text-gray-700 mb-2">
+                  Due Time (optional)
                 </label>
-                <select
-                  id="recurring"
-                  name="recurring"
-                  value={formData.recurring}
+                <input
+                  id="due_time"
+                  name="due_time"
+                  type="time"
+                  value={dueDateTime}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-purple-300 text-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
-                >
-                  <option value="none">None</option>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                </select>
+                />
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="recurring" className="block text-sm font-medium text-gray-700 mb-2">
+                Recurring:
+              </label>
+              <select
+                id="recurring"
+                name="recurring"
+                value={formData.recurring}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-purple-300 text-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+              >
+                <option value="none">None</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <span className="font-medium">Current time:</span> {formatDateWithTime(new Date().toISOString())}
+              </p>
+              <p className="text-sm text-blue-700 mt-1">
+                Your task will be saved with a creation timestamp automatically.
+              </p>
             </div>
 
             <div className="flex space-x-4 pt-4">

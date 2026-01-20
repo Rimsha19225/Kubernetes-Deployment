@@ -1,12 +1,17 @@
 from sqlmodel import Session, select
 from fastapi import HTTPException, status
 from typing import List, Optional
+from datetime import datetime, timezone
 
 from ..models.task import Task, TaskCreate, TaskUpdate
 from ..models.user import User
 from ..models.activity_log import ActivityActionEnum
 from ..utils.logging import logger
 from ..utils.activity_logger import log_activity
+
+
+def utcnow():
+    return datetime.now(timezone.utc)
 
 
 def create_task(task_data: TaskCreate, user_id: int, db: Session) -> Task:
@@ -35,7 +40,13 @@ def create_task(task_data: TaskCreate, user_id: int, db: Session) -> Task:
 
         # Create task with the provided user_id
         db_task = Task(
-            **task_data.dict(),
+            title=task_data.title,
+            description=task_data.description,
+            completed=getattr(task_data, 'completed', False),
+            priority=getattr(task_data, 'priority', 'medium'),
+            due_date=getattr(task_data, 'due_date', None),
+            recurring=getattr(task_data, 'recurring', 'none'),
+            category=getattr(task_data, 'category', 'other'),
             user_id=user_id
         )
 
@@ -186,8 +197,7 @@ def update_task(task_id: int, task_data: TaskUpdate, user_id: int, db: Session) 
             setattr(db_task, field, value)
 
         # Update the updated_at timestamp
-        from datetime import datetime
-        db_task.updated_at = datetime.utcnow()
+        db_task.updated_at = utcnow()
 
         db.add(db_task)
         db.commit()
@@ -237,10 +247,7 @@ def delete_task(task_id: int, user_id: int, db: Session) -> bool:
         task_title = db_task.title
         task_id_to_log = db_task.id
 
-        db.delete(db_task)
-        db.commit()
-
-        # Log the activity
+        # Log the activity BEFORE deleting the task, so the activity can reference the task
         log_activity(
             db=db,
             user_id=user_id,
@@ -248,6 +255,10 @@ def delete_task(task_id: int, user_id: int, db: Session) -> bool:
             task_id=task_id_to_log,
             task_title=task_title
         )
+
+        # Delete the task after logging the activity
+        db.delete(db_task)
+        db.commit()
 
         logger.info(f"Deleted task ID: {task_id} for user ID: {user_id}")
         return True

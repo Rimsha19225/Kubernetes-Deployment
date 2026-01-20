@@ -26,6 +26,20 @@ const TasksPage: React.FC = () => {
     return d;
   };
 
+  // Helper function to format date with time in Pakistan timezone
+  const formatDateWithTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Asia/Karachi', // Pakistan timezone
+      timeZoneName: 'short'
+    });
+  };
+
   const applyFiltersAndSorting = (tasksToFilter: Task[]) => {
     let result = [...tasksToFilter];
     const today = getToday();
@@ -169,6 +183,9 @@ const TasksPage: React.FC = () => {
     title: '', description: '', priority: 'medium', recurring: 'none', category: 'other', due_date: ''
   });
 
+  // State for time component of due date
+  const [dueDateTime, setDueDateTime] = useState<string>('');
+
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({
@@ -179,24 +196,48 @@ const TasksPage: React.FC = () => {
 
   const handleEditClick = (task: Task) => {
     setEditingTask(task);
-    setEditFormData({
+    let datePart = '';
+    let timePart = '00:00'; // Default time
+
+    if (task.due_date) {
+      const dueDate = new Date(task.due_date);
+      datePart = dueDate.toISOString().split('T')[0]; // YYYY-MM-DD format for date input
+
+      // Extract hours and minutes for time input
+      const hours = dueDate.getHours().toString().padStart(2, '0');
+      const minutes = dueDate.getMinutes().toString().padStart(2, '0');
+      timePart = `${hours}:${minutes}`;
+    }
+
+    setEditFormData(prev => ({
+      ...prev,
       title: task.title,
       description: task.description || '',
       priority: task.priority,
       recurring: task.recurring || 'none',
       category: task.category || 'other',
-      due_date: task.due_date ? new Date(task.due_date).toISOString().split('T')[0] : '' // Format for <input type="date">
-    });
+      due_date: datePart
+    }));
+
+    setDueDateTime(timePart);
   };
 
   const handleSaveEdit = async () => {
     if (!token || !editingTask) return;
     try {
+      // Combine date and time for due_date if date is provided
+      let combinedDueDate: string | undefined;
+      if (editFormData.due_date) {
+        const timePart = dueDateTime || '00:00'; // Use selected time or default
+        const dateTimeStr = `${editFormData.due_date}T${timePart}:00`;
+        combinedDueDate = new Date(dateTimeStr).toISOString();
+      }
+
       // Format the due_date to ISO string if it exists and capitalize the title
       const formattedData = {
         ...editFormData,
         title: editFormData.title.charAt(0).toUpperCase() + editFormData.title.slice(1),
-        due_date: editFormData.due_date ? new Date(editFormData.due_date + 'T00:00:00').toISOString() : undefined
+        due_date: combinedDueDate
       };
 
       const result = await tasksApi.updateTask(editingTask.id, formattedData, token);
@@ -328,6 +369,13 @@ const TasksPage: React.FC = () => {
             </div>
 
             <div className="space-y-4">
+              {editingTask && editingTask.created_at && (
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-600">
+                    Created: {formatDateWithTime(editingTask.created_at)}
+                  </p>
+                </div>
+              )}
               <div>
                 <label htmlFor="edit-title" className="block text-sm font-medium text-gray-700 mb-1">
                   Title
@@ -392,7 +440,7 @@ const TasksPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="edit-due_date" className="text-gray-700 block text-sm font-medium mb-1">
                     Due Date
@@ -408,22 +456,36 @@ const TasksPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="edit-recurring" className="text-gray-700 block text-sm font-medium mb-1">
-                    Recurring
+                  <label htmlFor="edit-due_time" className="text-gray-700 block text-sm font-medium mb-1">
+                    Due Time
                   </label>
-                  <select
-                    id="edit-recurring"
-                    name="recurring"
-                    value={editFormData.recurring}
-                    onChange={handleEditChange}
-                    className="w-full px-4 py-2 border text-gray-600 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
-                  >
-                    <option value="none">None</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                  </select>
+                  <input
+                    id="edit-due_time"
+                    name="due_time"
+                    type="time"
+                    value={dueDateTime}
+                    onChange={(e) => setDueDateTime(e.target.value)}
+                    className="w-full px-4 py-2 text-gray-600 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                  />
                 </div>
+              </div>
+
+              <div>
+                <label htmlFor="edit-recurring" className="text-gray-700 block text-sm font-medium mb-1">
+                  Recurring
+                </label>
+                <select
+                  id="edit-recurring"
+                  name="recurring"
+                  value={editFormData.recurring}
+                  onChange={handleEditChange}
+                  className="w-full px-4 py-2 border text-gray-600 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                >
+                  <option value="none">None</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
               </div>
             </div>
 
@@ -454,19 +516,39 @@ const TaskItem = ({ task, onEdit, onToggle, onDelete }: { task: Task, onEdit: an
     const today = new Date();
     today.setHours(0,0,0,0);
 
+    // Helper function to format date with time in Pakistan timezone
+    const formatDateWithTime = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'Asia/Karachi', // Pakistan timezone
+            timeZoneName: 'short'
+        });
+    };
+
     let daysUntilDue: number | null = null;
+    let hoursUntilDue: number | null = null;
+    let exactDueDate: Date | null = null;
+
     if (task.due_date) {
         // Handle both ISO string and date-only string formats
-        let dueDate: Date;
-        if (task.due_date.includes('T')) {
-            dueDate = new Date(task.due_date);
-        } else {
-            // If it's just a date string (YYYY-MM-DD), treat as local date at midnight
-            dueDate = new Date(`${task.due_date}T00:00:00`);
-        }
-        dueDate.setHours(0,0,0,0);
-        daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        exactDueDate = new Date(task.due_date);
+
+        // Calculate days and hours until due based on Pakistan time
+        const pakistanTime = new Date(exactDueDate.toLocaleString('en-US', {timeZone: 'Asia/Karachi'}));
+        const pakistanToday = new Date(today.toLocaleString('en-US', {timeZone: 'Asia/Karachi'}));
+
+        const timeDiff = pakistanTime.getTime() - pakistanToday.getTime();
+        daysUntilDue = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        hoursUntilDue = Math.round(timeDiff / (1000 * 60 * 60));
     }
+
+    // Format the created_at date for display in Pakistan timezone
+    const formattedCreatedAt = task.created_at ? formatDateWithTime(task.created_at) : null;
 
     // Determine category color
     const categoryColors = {
@@ -498,7 +580,7 @@ const TaskItem = ({ task, onEdit, onToggle, onDelete }: { task: Task, onEdit: an
     };
 
     return (
-        <div className={`group border rounded-xl p-4 transition-all hover:shadow-md ${task.completed ? 'bg-gray-50 opacity-75' : 'bg-white border-gray-100'}`}>
+        <div className={`border rounded-xl p-4 transition-all hover:shadow-md ${task.completed ? 'bg-gray-50 opacity-75' : 'bg-white border-gray-100'}`}>
             <div className="flex justify-between items-start">
                 <div className="flex gap-3 items-start">
                     <input
@@ -533,10 +615,12 @@ const TaskItem = ({ task, onEdit, onToggle, onDelete }: { task: Task, onEdit: an
                                     daysUntilDue === 0 ? 'bg-orange-100 text-orange-800' :
                                     daysUntilDue && daysUntilDue < 0 ? 'bg-red-100 text-red-800' :
                                     'bg-blue-100 text-blue-800'
-                                }`}>
+                                }`} title={exactDueDate ? formatDateWithTime(task.due_date) : undefined}>
                                     {daysUntilDue === 0 ? 'Due Today' :
                                      daysUntilDue && daysUntilDue < 1 ? `Overdue ${Math.abs(daysUntilDue)} day` :
                                      `In ${daysUntilDue} day`}
+                                     {exactDueDate && hoursUntilDue !== null && Math.abs(hoursUntilDue) < 24 && hoursUntilDue !== 0 &&
+                                      ` (${hoursUntilDue > 0 ? 'in ' : 'was '} ${Math.abs(hoursUntilDue)} hr${Math.abs(hoursUntilDue) !== 1 ? 's' : ''})`}
                                 </span>
                             )}
 
@@ -545,14 +629,20 @@ const TaskItem = ({ task, onEdit, onToggle, onDelete }: { task: Task, onEdit: an
                                     {recurringIcons[task.recurring]} {task.recurring.charAt(0).toUpperCase() + task.recurring.slice(1)}
                                 </span>
                             )}
+
+                            {task.created_at && (
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600" title={`Created: ${formattedCreatedAt}`}>
+                                    Created: {new Date(task.created_at).toLocaleDateString('en-US', {timeZone: 'Asia/Karachi'})}
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>
                 <div className="flex flex-col items-end">
-                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex flex-col sm:flex-row gap-2 opacity-100">
                         <button onClick={() => onEdit(task)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">Edit</button>
                         {showConfirmDelete === task.id ? (
-                            <div className="flex gap-2">
+                            <div className="flex flex-col sm:flex-row gap-2">
                                 <button
                                     onClick={handleConfirmDelete}
                                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg font-medium"

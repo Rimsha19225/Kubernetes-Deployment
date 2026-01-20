@@ -1,7 +1,11 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
+
+
+def utcnow():
+    return datetime.now(timezone.utc)
 
 from typing import TYPE_CHECKING, List
 from .base import Base
@@ -35,8 +39,8 @@ class Task(TaskBase, table=True):
     completed: bool = Field(default=False)
     priority: PriorityEnum = Field(default=PriorityEnum.medium)
     due_date: Optional[datetime] = Field(default=None)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=utcnow)
+    updated_at: datetime = Field(default_factory=utcnow)
     user_id: int = Field(foreign_key="user.id", nullable=False)
 
     # Relationship to user
