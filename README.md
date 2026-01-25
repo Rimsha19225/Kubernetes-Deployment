@@ -1,10 +1,10 @@
-# Todo Application Phase 2
+# Todo Chatbot Application
 
-A secure, full-stack web application with Next.js frontend, FastAPI backend, PostgreSQL database, and JWT-based authentication.
+An advanced, full-stack web application with Next.js frontend, FastAPI backend, PostgreSQL database, JWT-based authentication, and AI-powered chatbot capabilities.
 
 ## Overview
 
-This application allows users to register accounts, log in securely, and manage their personal tasks. The system enforces data isolation so users can only access their own tasks. The application features a modern UI with responsive design, advanced task management capabilities, and comprehensive security measures.
+This application allows users to register accounts, log in securely, and manage their personal tasks. The system enforces data isolation so users can only access their own tasks. The application features a modern UI with responsive design, advanced task management capabilities, comprehensive security measures, and an AI-powered chatbot for natural language task management.
 
 ## Architecture
 
@@ -12,29 +12,85 @@ This application allows users to register accounts, log in securely, and manage 
 - **Backend**: FastAPI with Python 3.11
 - **Database**: PostgreSQL with SQLModel ORM
 - **Authentication**: JWT-based authentication with secure token handling
+- **AI/Chatbot**: Natural Language Processing with intent recognition and task management
+- **Containerization**: Docker and Docker Compose for deployment
+- **Testing**: Unit, Integration, Functional, and E2E testing frameworks
 
 ## Project Structure
 
 ```
 ├── backend/
 │   ├── src/
-│   │   ├── models/
-│   │   ├── services/
+│   │   ├── ai/                     # AI and chatbot components
+│   │   │   ├── backend_integration.py
+│   │   │   ├── chatbot_orchestrator.py
+│   │   │   ├── nlp_intent_processor.py
+│   │   │   ├── quality_guard.py
+│   │   │   ├── response_composer.py
+│   │   │   └── task_control.py
 │   │   ├── api/
-│   │   └── database/
+│   │   │   ├── chat_router.py      # AI chatbot endpoints
+│   │   │   └── ...                 # Other API routers
+│   │   ├── middleware/
+│   │   │   ├── chat_auth.py        # Chat authentication
+│   │   │   └── ...                 # Other middleware
+│   │   ├── models/
+│   │   │   ├── chat.py             # Chat models
+│   │   │   └── chat_models.py      # Additional chat models
+│   │   ├── services/
+│   │   │   ├── chat_service.py     # Chat service logic
+│   │   │   └── ...                 # Other services
+│   │   └── utils/
 │   ├── requirements.txt
-│   └── alembic/
+│   ├── alembic/
+│   ├── docker-compose.yml
+│   └── Dockerfile.backend
 ├── frontend/
 │   ├── src/
 │   │   ├── app/
 │   │   │   ├── api/
 │   │   │   ├── components/
+│   │   │   │   └── Common/         # Shared components
 │   │   │   ├── pages/
 │   │   │   ├── context/
 │   │   │   ├── types/
 │   │   │   └── utils/
+│   │   ├── components/
+│   │   └── ...
 │   ├── package.json
-│   └── next.config.js
+│   ├── next.config.js
+│   └── Dockerfile.frontend
+├── docker-config/                  # Docker configuration files
+│   ├── docker-compose.yml
+│   ├── docker-compose.dev.yml
+│   ├── Dockerfile.backend
+│   └── Dockerfile.frontend
+├── documentation/                  # Comprehensive documentation
+│   ├── API_DOCUMENTATION.md
+│   ├── AUTH_INTEGRATION.md
+│   ├── BACKUP_RECOVERY_PROCEDURES.md
+│   ├── DEPLOYMENT_DOCUMENTATION.md
+│   ├── ENVIRONMENT_SETUP.md
+│   ├── FINAL_INTEGRATION_TESTING.md
+│   └── SECURITY_REVIEW_PENTEST.md
+├── specs/                          # Specification documents
+│   ├── 1-ai-todo-chatbot/          # AI chatbot specifications
+│   │   ├── spec.md
+│   │   ├── plan.md
+│   │   ├── tasks.md
+│   │   └── ...
+│   └── 1-phase2-todo-app/          # Main app specifications
+├── tests/                          # Testing suite
+│   ├── unit/
+│   ├── integration/
+│   ├── functional/
+│   └── e2e/
+├── .specify/                       # Spec-driven development tools
+│   ├── memory/
+│   ├── scripts/
+│   └── templates/
+├── .claude/                        # Claude Code agents
+│   └── agents/
 ├── .env
 └── README.md
 ```
@@ -55,6 +111,16 @@ This application allows users to register accounts, log in securely, and manage 
 2. Install dependencies: `npm install`
 3. Configure environment variables in `.env` file as needed
 4. Start the development server: `npm run dev`
+
+### Docker Setup (Recommended for Production)
+
+1. Navigate to the project root: `cd ..`
+2. Build and start services: `docker-compose -f docker-config/docker-compose.yml up --build`
+3. Or for development: `docker-compose -f docker-config/docker-compose.dev.yml up`
+
+### Environment Setup Documentation
+
+For detailed environment setup instructions, refer to `documentation/ENVIRONMENT_SETUP.md`.
 
 ## Features
 
@@ -83,6 +149,14 @@ This application allows users to register accounts, log in securely, and manage 
 - **Advanced Sorting**: Sort by creation date, due date, priority, or title
 - **Search Functionality**: Search through task titles and descriptions
 
+### AI-Powered Chatbot Features
+- **Natural Language Processing**: Intuitive task management through conversational interface
+- **Intent Recognition**: Smart parsing of user commands to create, update, or manage tasks
+- **Chat Orchestration**: Sophisticated dialogue management and response composition
+- **Quality Guard**: AI response validation and safety checks
+- **Task Control**: Seamless integration between chat commands and task operations
+- **User Context Handling**: Personalized responses based on user data and preferences
+
 ### Dashboard & Analytics
 - **Task Statistics**: Real-time counters for total, completed, and pending tasks
 - **Quick Actions**: Direct links to view tasks or create new ones
@@ -102,6 +176,7 @@ This application allows users to register accounts, log in securely, and manage 
 - Data isolation - users can only access their own tasks
 - Protection against common web vulnerabilities
 - Secure API endpoints with proper authentication checks
+- AI response validation and safety mechanisms
 
 ### Technical Features
 - **API Layer**: Centralized API client using native fetch
@@ -110,6 +185,8 @@ This application allows users to register accounts, log in securely, and manage 
 - **Component Architecture**: Reusable, modular components
 - **Real-time Updates**: Event-driven updates across components
 - **Activity Tracking**: Comprehensive logging of user actions
+- **Containerization**: Docker support for consistent deployments
+- **Testing Frameworks**: Unit, integration, functional, and E2E testing coverage
 
 ## Environment Variables
 
@@ -137,6 +214,19 @@ This application allows users to register accounts, log in securely, and manage 
 - `PUT /tasks/{id}` - Update a task
 - `DELETE /tasks/{id}` - Delete a task
 
+### Chat/AI
+- `POST /chat/process` - Process natural language input and manage tasks
+- `GET /chat/history/{user_id}` - Get chat history for a specific user
+- `POST /chat/message` - Send a message to the chatbot
+- `DELETE /chat/clear/{user_id}` - Clear chat history for a user
+
+### Activities
+- `GET /activities` - Get user activity logs
+- `POST /activities` - Log a new activity
+
+### Health
+- `GET /health` - Health check endpoint
+
 ## Contributing
 
 1. Fork the repository
@@ -147,18 +237,50 @@ This application allows users to register accounts, log in securely, and manage 
 
 ## Testing
 
-The application includes comprehensive test suites for both frontend and backend components. Run tests using the provided test scripts in each respective directory.
+The application includes comprehensive test suites across multiple layers:
+- **Unit Tests**: Located in `tests/unit/` - testing individual components and functions
+- **Integration Tests**: Located in `tests/integration/` - testing component interactions
+- **Functional Tests**: Located in `tests/functional/` - testing complete feature workflows
+- **End-to-End Tests**: Located in `tests/e2e/` - testing user journeys across the entire application
+
+Run tests using the provided test scripts in each respective directory or refer to `documentation/FINAL_INTEGRATION_TESTING.md` for detailed testing procedures.
+
+## Documentation
+
+Comprehensive documentation is available in the `documentation/` directory:
+- `API_DOCUMENTATION.md` - Complete API reference
+- `AUTH_INTEGRATION.md` - Authentication integration guide
+- `BACKUP_RECOVERY_PROCEDURES.md` - Backup and recovery procedures
+- `DEPLOYMENT_DOCUMENTATION.md` - Deployment guidelines
+- `ENVIRONMENT_SETUP.md` - Environment setup instructions
+- `FINAL_INTEGRATION_TESTING.md` - Integration testing procedures
+- `SECURITY_REVIEW_PENTEST.md` - Security review and penetration testing
 
 ## Deployment
 
-For production deployment:
+For production deployment, follow these steps or refer to `documentation/DEPLOYMENT_DOCUMENTATION.md`:
 1. Set up environment variables for production
 2. Build the frontend: `npm run build`
 3. Deploy the backend with proper security configurations
 4. Configure reverse proxy and SSL certificates
 5. Set up database backups and monitoring
+6. Use Docker Compose for containerized deployment: `docker-compose -f docker-config/docker-compose.yml up -d`
+
+## Specifications
+
+Detailed specifications are available in the `specs/` directory:
+- `specs/1-ai-todo-chatbot/` - AI chatbot feature specifications
+- `specs/1-phase2-todo-app/` - Main application specifications
+
+## AI Agents
+
+The application uses specialized AI agents for various functions, documented in `.claude/agents/`:
+- `chatbot-orchestrator.md` - Manages the chatbot conversation flow
+- `nlp-intent-agent.md` - Handles natural language processing and intent recognition
+- `ai-response-composer.md` - Composes human-friendly responses
+- `ai-quality-guard.md` - Ensures AI response quality and safety
+- And more specialized agents for different aspects of the system
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.# todo-web-app
-# todo-app-chatbot
+This project is licensed under the MIT License - see the LICENSE file for details.
