@@ -1,0 +1,114 @@
+openapi: 3.0.0
+info:
+  title: AI Todo Chatbot API
+  version: 1.0.0
+  description: API contract for the AI-powered Todo Chatbot that operates as a control layer on top of Phase 2 APIs
+
+paths:
+  /chat/message:
+    post:
+      summary: Process a user message through the AI chatbot
+      description: Accepts natural language input from authenticated users and processes it through the AI intent recognition and task management system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserMessage'
+      responses:
+        '200':
+          description: Successful response with chatbot output
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          description: Bad request - invalid input or malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - user not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - user lacks required permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    UserMessage:
+      type: object
+      required:
+        - message
+        - userId
+      properties:
+        message:
+          type: string
+          description: The natural language message from the user
+          example: "Add a task to buy groceries"
+        userId:
+          type: string
+          description: The ID of the authenticated user
+          example: "user-123"
+        sessionId:
+          type: string
+          description: Optional session ID to maintain conversation context
+          example: "session-456"
+
+    ChatResponse:
+      type: object
+      required:
+        - response
+        - responseType
+        - sessionId
+      properties:
+        response:
+          type: string
+          description: The chatbot's response to the user
+          example: "I've created a task 'buy groceries' for you."
+        responseType:
+          type: string
+          enum: [success, clarification_needed, confirmation_required, error]
+          description: The type of response
+        sessionId:
+          type: string
+          description: The session ID for maintaining conversation context
+          example: "session-456"
+        taskId:
+          type: string
+          description: Optional task ID if a task was created or modified
+          example: "task-789"
+        suggestions:
+          type: array
+          items:
+            type: string
+          description: Optional suggestions for follow-up actions
+          example: ["Would you like to set a due date?", "I can also search for similar tasks"]
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: The error code
+          example: "INVALID_INPUT"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "The task title is required for task creation"

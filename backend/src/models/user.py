@@ -10,6 +10,7 @@ from .base import Base
 if TYPE_CHECKING:
     from .task import Task  # Only import for type checking to avoid circular import
     from .activity_log import ActivityLog  # Import for type checking
+    from .chat import ChatMessage, ChatSession  # Import for type checking
 
 
 
@@ -36,6 +37,10 @@ class User(UserBase, table=True):
     tasks: List["Task"] = Relationship(back_populates="user")
     # Relationship to activities
     activities: List["ActivityLog"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "select"})
+    # Relationship to chat messages
+    chat_messages: List["ChatMessage"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "select"})
+    # Relationship to chat sessions
+    chat_sessions: List["ChatSession"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "select"})
 
 
     def verify_password(self, password: str) -> bool:

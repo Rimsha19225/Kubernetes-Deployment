@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     # CORS settings
     allowed_origins: str = "*"  # Comma-separated list of allowed origins
 
+    # AI Provider settings
+    cohere_api_key: str = "738iBMR4YfDZX6ZfioIbPJpkptA3flCd64Rri1bI"
+
     # URL settings
     backend_url: str = "https://rimshaarshad-todo-app.hf.space"
     frontend_url: str = "http://localhost:3000"

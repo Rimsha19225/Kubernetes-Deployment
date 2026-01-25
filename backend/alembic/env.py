@@ -9,6 +9,7 @@ from sqlmodel import SQLModel
 from src.models.user import User
 from src.models.task import Task
 from src.models.activity_log import ActivityLog
+from src.models.chat import ChatMessage, ChatSession
 
 # this is the Alembic Config object
 config = context.config
@@ -19,6 +20,13 @@ if config.config_file_name is not None:
 
 # Set target_metadata to SQLModel's metadata
 target_metadata = SQLModel.metadata
+
+# Override the database URL from settings
+from src.config import settings
+database_url = str(settings.neon_database_url) if settings.neon_database_url else str(settings.database_url)
+
+# Set the database URL in the config
+config.set_main_option("sqlalchemy.url", database_url)
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""

@@ -1,84 +1,143 @@
 <!-- SYNC IMPACT REPORT
-Version change: N/A → 1.0.0
-Modified principles: None (new constitution)
-Added sections: All sections (new constitution)
-Removed sections: None
+Version change: 1.0.0 → 2.0.0
+Modified principles: Phase Isolation, Agent-Governed Development, Core Principles
+Added sections: Phase 3 Principles, Agent Responsibilities, Skill-Governed Capabilities
+Removed sections: Phase 2-specific constraints
 Templates requiring updates:
 - .specify/templates/plan-template.md ✅ updated
 - .specify/templates/spec-template.md ✅ updated
 - .specify/templates/tasks-template.md ✅ updated
-- .specify/templates/commands/*.md ⚠ pending
+- .specify/templates/commands/*.md ✅ updated
 Follow-up TODOs: None
 -->
-# Todo Application Phase 2 Constitution
+# Todo Application Phase 3 Constitution: AI Todo Chatbot
+
+## Overview
+Phase 3 introduces an AI-powered Todo Chatbot as an intelligent control and interaction layer on top of the existing Phase 2 system. The chatbot is NOT a separate application, but rather an intelligent control layer that must preserve all Phase 2 logic, APIs, and business rules.
 
 ## Core Principles
 
-### Specification-First Development
-No code may be written without an approved specification. All behavior must be explicitly described. Implicit logic is forbidden. Every feature and functionality must be fully specified before implementation begins.
+### 1. Phase 2 Preservation
+- Phase 2 APIs, business rules, and security measures are the single source of truth
+- The chatbot must use Phase 2 APIs exclusively for all operations
+- Direct database access by the chatbot is strictly forbidden
+- No Phase 2 logic may be modified, bypassed, or duplicated
 
-### Phase Isolation
-Only Phase 2 scope is allowed. No Phase 1 (CLI application) or Phase 3+ features (AI, chat, MCP, analytics, automation) are permitted. No CLI or terminal-based application functionality may be implemented.
+### 2. Intent-Driven Control
+- The chatbot operates by identifying user intent from natural language input
+- Every chatbot action must map to a valid Phase 2 operation
+- If an intent cannot be safely mapped to a Phase 2 operation, it must be rejected or clarified
 
-### Explicit Domain Definition
-The Task domain must be fully defined in Phase 2 specs with all fields, defaults, valid/invalid states, and CRUD behavior explicitly documented. Domain logic must not be assumed or inferred.
+### 3. No Hallucinated Actions
+- The chatbot may not invent data, tasks, users, or states that don't exist in Phase 2
+- If information is not available via Phase 2 APIs, the chatbot must acknowledge this limitation
+- All responses must be grounded in actual system data
 
-### Strong Separation of Concerns
-Frontend, backend, authentication, database, and specifications must be strictly separated. Database schemas are defined only by the database agent. Backend consumes schemas but does not define them. Frontend never bypasses backend rules.
+### 4. User-Scoped Safety
+- The chatbot may only access data belonging to the authenticated user
+- Cross-user access is strictly forbidden
+- The chatbot must correctly identify and use the logged-in user context at all times
 
-### Authentication & Security First
-All task operations require a valid JWT. Users can only access their own data. Unauthorized access must be rejected explicitly. Security measures are paramount and non-negotiable.
+### 5. Explicit Behavior Only
+- All chatbot capabilities must be explicitly specified in the constitution or specifications
+- Implicit or assumed AI behavior is not allowed
+- If a behavior is not explicitly specified, the chatbot must not perform it
 
-### Agent-Governed Development
-All work must be performed by specialized agents with fixed responsibilities: system-architect-agent, backend-agent, frontend-agent, auth-integration-agent, sqlmodel-database-agent, domain-specification-agent, planner-decomposition-agent, integration-agent, quality-spec-guard-agent, skills-create-agent. No agent may operate outside its defined scope.
+## Agent-Governed Execution
 
-### Skill-Governed Capabilities
-Agents may only use approved skills. Skills must be atomic, documented, and non-overlapping. No agent may invent a skill independently.
+### Agent Responsibilities
+All Phase 3 work must be performed by specialized agents with fixed responsibilities:
+- **phase3-system-architect**: Defines and enforces system architecture
+- **ai-chatbot-orchestration**: Coordinates chatbot operations and intent processing
+- **nlp-intent**: Parses natural language and identifies user intent
+- **task-ai-control**: Translates AI intents to Phase 2 task operations
+- **user-context**: Manages user identity and data isolation
+- **ai-backend-integration**: Handles secure communication between AI and backend
+- **ai-response-composer**: Formats responses for user consumption
+- **ai-quality-guard**: Validates responses for safety and accuracy
+- **skills-create**: Manages the creation and governance of professional skills
 
-### Quality as a Gate
-Every phase output must pass spec completeness checks, security checks, and integration checks. The Quality & Spec Guard Agent has final authority over all deliverables.
+### Agent Constraints
+- No agent may act outside its defined scope
+- Agents must coordinate through approved interfaces only
+- Agent behaviors must be explicitly specified
 
-## Additional Constraints
+## Skill-Governed Capabilities
 
-### Technology Stack Requirements
-- Frontend: Next.js (App Router) + Tailwind CSS
-- Backend: FastAPI (REST)
-- Database: PostgreSQL (via SQLModel, hosted on Neon)
-- Authentication: JWT-based auth (Better Auth or equivalent)
+### Skill Requirements
+- Agents may only use approved and documented skills
+- Skills must be atomic, non-overlapping, and purpose-specific
+- No agent may create or assume new skills without explicit approval
+- All skills must be documented in the skills directory
 
-### Security & Data Isolation
-- No shared mutable state across users
-- Users can only access their own data
-- All database logic must remain in the database layer, never in frontend
-- JWT enforcement on every protected route
+## AI Provider Configuration
 
-### Code Quality Standards
-- No vibe coding
-- No undocumented behavior
-- No assumptions without specifications
-- Minimal, testable changes only
+### API Key Management
+- The system must use the Cohere API key for all AI operations
+- API keys must be stored securely in environment variables
+- The Cohere API key must be accessible to all AI agents and services
+- The OpenAI Agent SDK must be configured to use the Cohere API key instead of OpenAI services
+- API key access must follow the principle of least privilege
 
-## Development Workflow
+## Supported Chatbot Operations
 
-### Implementation Process
-1. Specification must be approved before any code is written
-2. Use designated agents for specific tasks only
-3. Follow the sequence: Domain Spec → Plan → Tasks → Implementation
-4. All changes must be small, testable, and precisely referenced
+The chatbot must be able to perform these operations using Phase 2 APIs:
+- Add tasks
+- Delete tasks
+- Edit tasks
+- Mark tasks as complete or incomplete
+- Search tasks by title or description keywords
+- Filter tasks (completed/incomplete)
+- Sort tasks (by title, status, date)
+- List tasks clearly
+- Answer questions about the currently logged-in user (e.g., email)
 
-### Review Process
-- All implementations must trace back to approved specifications
-- Cross-agent integration points must be validated by integration-agent
-- Quality-spec-guard-agent performs final validation before acceptance
+## Chatbot Operation Rules
 
-### Quality Gates
-- All behavior must be traceable to specifications
-- Security checks must pass for all features
-- Integration tests must validate frontend-backend contracts
-- Authentication must be verified on all protected routes
+### Safety Requirements
+- The chatbot must confirm destructive actions when appropriate
+- Ambiguous commands must trigger clarification questions
+- Multi-step commands must be handled safely and sequentially
+- Errors must be translated into clear, human-readable messages
 
-## Governance
+### Authentication & Authorization
+- All actions must respect existing authentication protocols
+- User data isolation must be maintained at all times
+- The chatbot must validate user context before each sensitive operation
 
-All development activities must comply with this constitution. Amendments require explicit documentation, approval from project stakeholders, and a clear migration plan. All pull requests and reviews must verify constitutional compliance. The constitution supersedes all other development practices and guidelines.
+## Hard Constraints
 
-**Version**: 1.0.0 | **Ratified**: 2026-01-14 | **Last Amended**: 2026-01-14
+### Non-Negotiable Requirements
+- No direct database access by any AI component
+- No modification of Phase 2 business rules
+- No unauthenticated actions
+- No cross-user data access
+- No silent failures
+- No undocumented AI behavior
+
+## Success Criteria
+
+Phase 3 is considered complete only if:
+- All supported task operations work reliably via the chatbot
+- The chatbot consistently respects authentication and user isolation
+- The chatbot never bypasses Phase 2 APIs
+- Errors and confirmations are clearly communicated to users
+- All chatbot behavior is traceable to specifications
+- No Phase 2 functionality is broken or compromised
+
+## Decision Priority Order
+
+When ambiguity arises, decisions must follow this priority:
+1. Phase 3 Constitution
+2. Phase 2 APIs and established rules
+3. Approved Phase 3 Specifications
+4. Security and user safety considerations
+5. Clarity over convenience
+
+## Constitutional Rule
+
+**If a behavior is not explicitly specified in this constitution or supporting specifications, the chatbot must not perform it.**
+
+This ensures the system remains safe, predictable, and aligned with the established architectural principles.
+
+**Version**: 2.0.0 | **Ratified**: 2026-01-21 | **Last Amended**: 2026-01-21

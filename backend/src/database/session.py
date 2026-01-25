@@ -8,6 +8,7 @@ from ..config import settings
 from ..models.user import User
 from ..models.task import Task
 from ..models.activity_log import ActivityLog
+from ..models.chat import ChatMessage, ChatSession
 
 # Create the database engine
 # Use Neon database URL if available, otherwise fall back to default database URL

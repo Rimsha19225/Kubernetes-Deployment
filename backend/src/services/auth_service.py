@@ -142,6 +142,63 @@ def login_user(email: str, password: str, db: Session) -> Optional[Token]:
         )
 
 
+def get_user_by_id(user_id: str) -> Optional[User]:
+    """
+    Get a user by their ID or by token payload data
+    """
+    try:
+        from sqlmodel import Session
+        from ..database.session import engine
+
+        # Create a session directly for this function call
+        with Session(engine) as session:
+            # Check if user_id is a numeric string (traditional ID lookup)
+            if user_id and user_id.isdigit():
+                user_id_int = int(user_id)
+                user = session.exec(select(User).where(User.id == user_id_int)).first()
+                return user
+            else:
+                # Assume user_id is an email or token payload identifier
+                # If it looks like an email, search by email
+                if '@' in user_id:
+                    user = session.exec(select(User).where(User.email == user_id)).first()
+                    return user
+                else:
+                    # If it's not a numeric ID or email, it might be a sub from JWT
+                    # For now, treat it as a potential email or return None
+                    logger.warning(f"Non-numeric user ID format: {user_id}")
+                    return None
+    except ValueError:
+        # Handle case where user_id can't be converted to int
+        logger.warning(f"Invalid user ID format (not numeric): {user_id}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error during user retrieval: {str(e)}")
+        return None
+
+
+def decode_access_token(token: str) -> Optional[dict]:
+    """
+    Decode an access token and return the payload data
+    """
+    try:
+        from ..config import settings
+        import jwt
+        from jwt import ExpiredSignatureError, InvalidTokenError
+
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+        return payload
+    except ExpiredSignatureError:
+        logger.warning("Attempted to decode expired token")
+        return None
+    except InvalidTokenError as e:
+        logger.error(f"Error decoding token: {str(e)}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error during token decoding: {str(e)}")
+        return None
+
+
 def logout_user(token: str) -> bool:
     """
     Logout a user (currently just a placeholder - in a real app you'd blacklist the token)

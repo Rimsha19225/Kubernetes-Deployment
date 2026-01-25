@@ -5,6 +5,8 @@ from .api.auth_router import router as auth_router
 from .api.task_router import router as task_router
 from .api.health_router import router as health_router
 from .api.activities_router import router as activities_router
+from .api.chat_router import router as chat_router
+from .middleware.rate_limit import RateLimitMiddleware
 from .middleware.error_handler import (
     http_exception_handler,
     validation_exception_handler,
@@ -56,6 +58,9 @@ def create_app():
     from .middleware.performance import PerformanceMiddleware
     app.add_middleware(PerformanceMiddleware)
 
+    # Add Rate Limiting middleware for chat endpoints
+    app.add_middleware(RateLimitMiddleware, requests_per_minute=30)
+
     # Register exception handlers
     app.add_exception_handler(404, http_exception_handler)
     app.add_exception_handler(500, general_exception_handler)
@@ -73,6 +78,9 @@ def create_app():
 
     app.include_router(activities_router)
     logger.info("Activities router included")
+
+    app.include_router(chat_router)
+    logger.info("Chat router included")
 
     @app.get("/")
     def read_root():

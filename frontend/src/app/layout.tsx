@@ -6,6 +6,7 @@ import { AuthProvider } from './context/auth';
 import { LoadingProvider } from './context/loading';
 import { TaskDeleteProvider } from '../context/task-delete-context';
 import ErrorBoundary from './components/ErrorBoundary';
+import FloatingChatbot from '../components/Common/FloatingChatbot';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -66,6 +67,7 @@ export default function RootLayout({
             <TaskDeleteProvider>
               <ErrorBoundary>
                 <div id="root">{children}</div>
+                <FloatingChatbot />
               </ErrorBoundary>
             </TaskDeleteProvider>
           </LoadingProvider>
