@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/auth';
 import Link from 'next/link';
@@ -97,7 +97,7 @@ const TasksPage: React.FC = () => {
 
   // --- API Handlers ---
 
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     if (!isAuthenticated || !token) {
       router.push('/login');
       return;
@@ -115,13 +115,30 @@ const TasksPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthenticated, token, router]);
 
-  useEffect(() => { loadTasks(); }, [isAuthenticated, token]);
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      loadTasks();
+    }
+  }, [isAuthenticated, token, loadTasks]);
 
   useEffect(() => {
     applyFiltersAndSorting(tasks);
   }, [searchTerm, filter, sortBy, sortOrder, tasks]);
+
+  // Listen for task-updated events to refresh the task list when tasks are updated via chatbot or new task creation
+  useEffect(() => {
+    const handleTaskUpdated = () => {
+      loadTasks();
+    };
+
+    window.addEventListener("task-updated", handleTaskUpdated);
+
+    return () => {
+      window.removeEventListener("task-updated", handleTaskUpdated);
+    };
+  }, [loadTasks]);
 
   const handleToggleComplete = async (task: Task) => {
     if (!token) return;

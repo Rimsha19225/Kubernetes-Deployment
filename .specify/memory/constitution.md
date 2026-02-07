@@ -1,143 +1,166 @@
 <!-- SYNC IMPACT REPORT
-Version change: 1.0.0 → 2.0.0
-Modified principles: Phase Isolation, Agent-Governed Development, Core Principles
-Added sections: Phase 3 Principles, Agent Responsibilities, Skill-Governed Capabilities
-Removed sections: Phase 2-specific constraints
-Templates requiring updates:
-- .specify/templates/plan-template.md ✅ updated
-- .specify/templates/spec-template.md ✅ updated
-- .specify/templates/tasks-template.md ✅ updated
-- .specify/templates/commands/*.md ✅ updated
-Follow-up TODOs: None
+     Version change: 2.0.0 → 3.0.0
+     Modified principles: Phase Isolation, Agent-Governed Development, Core Principles
+     Added sections: Phase IV Principles, Cloud-Native DevOps Architecture, Infrastructure Intelligence
+     Removed sections: Phase 3-specific constraints
+     Templates requiring updates:
+     - .specify/templates/plan-template.md ✅ updated
+     - .specify/templates/spec-template.md ✅ updated
+     - .specify/templates/tasks-template.md ✅ updated
+     - .specify/templates/commands/*.md ✅ updated
+     Follow-up TODOs: None
 -->
-# Todo Application Phase 3 Constitution: AI Todo Chatbot
+# Todo Application Phase IV Constitution: Cloud-Native Infrastructure Intelligence
 
 ## Overview
-Phase 3 introduces an AI-powered Todo Chatbot as an intelligent control and interaction layer on top of the existing Phase 2 system. The chatbot is NOT a separate application, but rather an intelligent control layer that must preserve all Phase 2 logic, APIs, and business rules.
+Phase IV transforms the existing AI-Native Todo Application (Frontend + Backend + Neon DB + AI Chatbot) into a Cloud-Native, Kubernetes-deployable, Helm-packaged, AI-operated infrastructure using intelligent Agents and reusable Skills. This phase does not modify application logic but creates intelligent infrastructure deployment capabilities.
 
 ## Core Principles
 
-### 1. Phase 2 Preservation
-- Phase 2 APIs, business rules, and security measures are the single source of truth
-- The chatbot must use Phase 2 APIs exclusively for all operations
-- Direct database access by the chatbot is strictly forbidden
-- No Phase 2 logic may be modified, bypassed, or duplicated
+### 1. Phase Preservation
+- Phase II and III application logic, APIs, business rules, and security measures remain unchanged
+- No modification of database schemas or API behavior
+- No introduction of new application features
+- Infrastructure changes must preserve all existing functionality
 
-### 2. Intent-Driven Control
-- The chatbot operates by identifying user intent from natural language input
-- Every chatbot action must map to a valid Phase 2 operation
-- If an intent cannot be safely mapped to a Phase 2 operation, it must be rejected or clarified
+### 2. Infrastructure-First Intelligence
+- All infrastructure must be generated through Agents using defined Skills
+- Everything must be production-grade Kubernetes artifacts
+- Containerization, orchestration, deployment, scaling, and infrastructure intelligence are the sole focus
+- All outputs must be deployable via Kubernetes, Helm, and AI-assisted operations
 
-### 3. No Hallucinated Actions
-- The chatbot may not invent data, tasks, users, or states that don't exist in Phase 2
-- If information is not available via Phase 2 APIs, the chatbot must acknowledge this limitation
-- All responses must be grounded in actual system data
+### 3. Container Boundary Integrity
+- Frontend and backend must be independently containerized and deployable
+- Each service must have clear, isolated responsibilities
+- Container boundaries must preserve service independence
+- Service networking must be explicitly defined and secured
 
-### 4. User-Scoped Safety
-- The chatbot may only access data belonging to the authenticated user
-- Cross-user access is strictly forbidden
-- The chatbot must correctly identify and use the logged-in user context at all times
+### 4. Secret Management Excellence
+- Secrets must be handled using Kubernetes Secrets (never plain text)
+- Environment variables must be converted to secure Kubernetes Secrets
+- JWT secrets, DB URLs, and sensitive data must use proper Kubernetes security
+- No hardcoding of credentials in configuration files
 
-### 5. Explicit Behavior Only
-- All chatbot capabilities must be explicitly specified in the constitution or specifications
-- Implicit or assumed AI behavior is not allowed
-- If a behavior is not explicitly specified, the chatbot must not perform it
+### 5. AI-Assisted Operations Compliance
+- System must be operable using kubectl-ai and kagent
+- All infrastructure operations must support AI-assisted management
+- Infrastructure must be monitorable and manageable through AI tools
+- Cluster health monitoring must be integrated with kagent
 
-## Agent-Governed Execution
+## Cloud-Native DevOps Architecture
+
+### Containerization Standards
+All work must follow these containerization principles:
+- **docker-architect**: Creates Dockerfiles for services
+- **docker-compose**: Manages multi-container configurations
+- **kubernetes-manifest-agent**: Generates Kubernetes deployments, services, ConfigMaps, Secrets
+- **helm-chart-agent**: Packages applications into Helm charts
+- **minikube-deployment-agent**: Deploys to local clusters
+- **secrets-config-agent**: Converts .env to Kubernetes Secrets
+- **service-exposure-agent**: Makes services accessible via NodePort/Ingress
+
+### Deployment Architecture
+- Docker containers for all services
+- Kubernetes manifests for orchestration
+- Helm charts for package management
+- Minikube for local deployment
+- Proper secrets and networking configuration
+- Reusable cloud-native blueprints
+
+## Infrastructure Intelligence
 
 ### Agent Responsibilities
-All Phase 3 work must be performed by specialized agents with fixed responsibilities:
-- **phase3-system-architect**: Defines and enforces system architecture
-- **ai-chatbot-orchestration**: Coordinates chatbot operations and intent processing
-- **nlp-intent**: Parses natural language and identifies user intent
-- **task-ai-control**: Translates AI intents to Phase 2 task operations
-- **user-context**: Manages user identity and data isolation
-- **ai-backend-integration**: Handles secure communication between AI and backend
-- **ai-response-composer**: Formats responses for user consumption
-- **ai-quality-guard**: Validates responses for safety and accuracy
-- **skills-create**: Manages the creation and governance of professional skills
+All Phase IV work must be performed by specialized agents:
+- **deployment-orchestrator-agent**: Acts as the "DevOps Brain" - analyzes app structure and generates deployment plans
+- **cloud-blueprint-architect-agent**: Converts specs to infra blueprints (impressive to judges)
+- **kagent-ops-agent**: Manages cluster health and optimization
+- **kubectl-ai-ops-agent**: Handles kubectl-ai operations for cluster management
+- **minikube-deployment-agent**: Manages local cluster deployments
+- **helm-chart-agent**: Packages applications into Helm charts
+- **kubernetes-manifest-agent**: Creates Kubernetes manifests
+- **secrets-config-agent**: Manages secrets configuration
+- **service-exposure-agent**: Handles service exposure and accessibility
 
-### Agent Constraints
-- No agent may act outside its defined scope
-- Agents must coordinate through approved interfaces only
-- Agent behaviors must be explicitly specified
+### Skill-Governed Capabilities
+All agents must use approved skills:
+- **dockerfile-generation-skill**: Creates Dockerfiles
+- **docker-compose-skill**: Manages compose configurations
+- **kubernetes-manifest-skill**: Generates Kubernetes resources
+- **helm-chart-generation-skill**: Creates Helm charts
+- **minikube-deployment-skill**: Handles minikube deployments
+- **kubectl-ai-operations-skill**: Manages kubectl-ai operations
+- **kagent-ops-skill**: Manages cluster operations
+- **service-exposure-skill**: Handles service exposure
+- **env-secrets-config-skill**: Manages environment and secrets
+- **image-build-push-skill**: Builds and pushes images
+- **pod-debugging-skill**: Debugs pods
+- **resource-scaling-skill**: Handles resource scaling
+- **cloud-native-blueprint-skill**: Creates cloud blueprints
 
-## Skill-Governed Capabilities
+## Cloud-Native Deployment Requirements
 
-### Skill Requirements
-- Agents may only use approved and documented skills
-- Skills must be atomic, non-overlapping, and purpose-specific
-- No agent may create or assume new skills without explicit approval
-- All skills must be documented in the skills directory
+### Deployment Success Criteria
+- The whole app runs on Minikube
+- `helm install` deploys the full system
+- kubectl-ai can inspect and manage pods
+- kagent can monitor cluster health
+- No manual YAML editing required after generation
+- The blueprint can be reused for any similar full-stack app
 
-## AI Provider Configuration
+### Service Accessibility
+- Frontend and backend must be accessible through browsers
+- NodePort or Ingress configuration for external access
+- Proper networking between services
+- Browser accessibility via configured ports/domains
 
-### API Key Management
-- The system must use the Cohere API key for all AI operations
-- API keys must be stored securely in environment variables
-- The Cohere API key must be accessible to all AI agents and services
-- The OpenAI Agent SDK must be configured to use the Cohere API key instead of OpenAI services
-- API key access must follow the principle of least privilege
-
-## Supported Chatbot Operations
-
-The chatbot must be able to perform these operations using Phase 2 APIs:
-- Add tasks
-- Delete tasks
-- Edit tasks
-- Mark tasks as complete or incomplete
-- Search tasks by title or description keywords
-- Filter tasks (completed/incomplete)
-- Sort tasks (by title, status, date)
-- List tasks clearly
-- Answer questions about the currently logged-in user (e.g., email)
-
-## Chatbot Operation Rules
-
-### Safety Requirements
-- The chatbot must confirm destructive actions when appropriate
-- Ambiguous commands must trigger clarification questions
-- Multi-step commands must be handled safely and sequentially
-- Errors must be translated into clear, human-readable messages
-
-### Authentication & Authorization
-- All actions must respect existing authentication protocols
-- User data isolation must be maintained at all times
-- The chatbot must validate user context before each sensitive operation
+### Infrastructure Intelligence Goals
+- Analyze project structure before generating manifests
+- Decide correct container boundaries
+- Define networking between services
+- Convert .env configuration into Kubernetes Secrets
+- Ensure browser accessibility via NodePort or Ingress
+- Prepare the system for future Dapr integration (Phase V readiness)
 
 ## Hard Constraints
 
 ### Non-Negotiable Requirements
-- No direct database access by any AI component
-- No modification of Phase 2 business rules
-- No unauthenticated actions
-- No cross-user data access
-- No silent failures
-- No undocumented AI behavior
+- DO NOT modify Phase II or Phase III application logic
+- DO NOT change database schemas or API behavior
+- DO NOT introduce new features into the app
+- ONLY work on containerization, orchestration, deployment, scaling, and infrastructure intelligence
+- Everything must be generated through Agents using defined Skills
+- All outputs must be production-grade Kubernetes artifacts
+- Secrets must be handled using Kubernetes Secrets (never plain text)
+- Frontend and backend must be independently containerized and deployable
+- The system must be Helm-installable using a single command
+- The system must be operable using kubectl-ai and kagent
 
 ## Success Criteria
 
-Phase 3 is considered complete only if:
-- All supported task operations work reliably via the chatbot
-- The chatbot consistently respects authentication and user isolation
-- The chatbot never bypasses Phase 2 APIs
-- Errors and confirmations are clearly communicated to users
-- All chatbot behavior is traceable to specifications
-- No Phase 2 functionality is broken or compromised
+Phase IV is considered complete only if:
+- Full application (frontend, backend, db, chatbot) runs on Minikube
+- A single `helm install` command deploys the entire system
+- kubectl-ai can effectively inspect and manage all pods
+- kagent can monitor cluster health and performance
+- No manual YAML editing is required after agent-generated manifests
+- The cloud-native blueprint is reusable across similar full-stack applications
+- All services are accessible through browsers via NodePort or Ingress
+- Secrets are properly managed using Kubernetes Secrets
+- The system maintains all existing application functionality
 
 ## Decision Priority Order
 
 When ambiguity arises, decisions must follow this priority:
-1. Phase 3 Constitution
-2. Phase 2 APIs and established rules
-3. Approved Phase 3 Specifications
-4. Security and user safety considerations
-5. Clarity over convenience
+1. Phase IV Constitution
+2. Existing application architecture (Phases II & III)
+3. Cloud-Native best practices
+4. Security and infrastructure safety considerations
+5. Reusability and blueprint consistency
 
 ## Constitutional Rule
 
-**If a behavior is not explicitly specified in this constitution or supporting specifications, the chatbot must not perform it.**
+**Infrastructure must be generated through Agents using defined Skills - no manual infrastructure changes are permitted.**
 
-This ensures the system remains safe, predictable, and aligned with the established architectural principles.
+This ensures the system remains consistent, automated, and aligned with the established cloud-native architectural principles.
 
-**Version**: 2.0.0 | **Ratified**: 2026-01-21 | **Last Amended**: 2026-01-21
+**Version**: 3.0.0 | **Ratified**: 2026-02-04 | **Last Amended**: 2026-02-04

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  labels:
+    app: todo-app
+    ai-monitored: "true"
+data:
+  # Frontend configuration
+  next-public-api-base-url: "http://backend-service:80"
+  next-public-app-url: "http://frontend-service:80"
+
+  # Backend configuration
+  app-name: "Todo Application API"
+  debug: "true"
+  environment: "development"
+  db-echo: "false"
+  access-token-expire-minutes: "15"
+  algorithm: "HS256"
+  better-auth-url: "http://frontend-service:80"
+  log-level: "INFO"
+  log-file: "logs/app.log"
+  allowed-origins: "http://frontend-service:80"
+  backend-url: "http://backend-service:80"
+  frontend-url: "http://frontend-service:80"

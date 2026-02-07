@@ -113,6 +113,46 @@ const FloatingChatbot = () => {
       };
 
       setMessages((prev) => [...prev, botResponse]);
+
+      // Dispatch events to update UI if the response indicates a task operation
+      if (data.task_id || data.response.toLowerCase().includes('task')) {
+        // Dispatch task-updated event to refresh task lists and stats
+        window.dispatchEvent(new CustomEvent('task-updated'));
+
+        // Create and dispatch activity event for recent activity updates
+        let activityType = 'task_updated';
+        let activityMessage = '';
+
+        const lowerResponse = data.response.toLowerCase();
+
+        if (lowerResponse.includes('completed') || lowerResponse.includes('done')) {
+          activityType = 'task_completed';
+          activityMessage = `Task was marked as completed`;
+        } else if (lowerResponse.includes('incomplete') || lowerResponse.includes('not done')) {
+          activityType = 'task_uncompleted';
+          activityMessage = `Task was marked as incomplete`;
+        } else if (lowerResponse.includes('delete') || data.response_type === 'task_deleted') {
+          activityType = 'task_deleted';
+          activityMessage = `Task was deleted`;
+        } else if (lowerResponse.includes('create') || data.response_type === 'success') {
+          activityType = 'task_updated'; // Could be task_created, but using updated as general
+          activityMessage = `Task was updated`;
+        } else {
+          activityMessage = `Task was updated`;
+        }
+
+        const activity = {
+          id: `act-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: activityType,
+          taskId: data.task_id || 'unknown',
+          taskTitle: data.task_title || 'Task',
+          userId: authToken,
+          timestamp: new Date().toISOString(),
+          message: activityMessage
+        };
+
+        window.dispatchEvent(new CustomEvent('task-activity', { detail: activity }));
+      }
     } catch (error) {
       console.error('Error sending message to chatbot:', error);
 

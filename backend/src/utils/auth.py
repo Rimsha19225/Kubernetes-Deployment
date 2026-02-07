@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
-import jwt
+from jose import jwt
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 

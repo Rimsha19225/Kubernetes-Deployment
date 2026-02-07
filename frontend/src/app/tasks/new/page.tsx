@@ -93,9 +93,6 @@ const NewTaskPage: React.FC = () => {
       );
 
       if (result.success && result.task) {
-        // Trigger event to update dashboard stats
-        window.dispatchEvent(new CustomEvent('task-updated'));
-
         // Emit activity event for task creation
         const newTask = result.task;
         const activity: ActivityItem = {
@@ -109,7 +106,10 @@ const NewTaskPage: React.FC = () => {
         };
         window.dispatchEvent(new CustomEvent('task-activity', { detail: activity }));
 
-        // Navigate to tasks page
+        // Trigger event to update dashboard stats and task lists
+        window.dispatchEvent(new CustomEvent('task-updated'));
+
+        // Navigate to tasks page immediately - the tasks page will listen for the event and refresh
         router.push('/tasks');
       } else {
         setError(result.error || 'Failed to create task');

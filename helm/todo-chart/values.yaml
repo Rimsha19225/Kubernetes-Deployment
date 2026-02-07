@@ -1,0 +1,68 @@
+# Default values for todo-app
+
+# Frontend configuration
+frontend:
+  image:
+    repository: todo-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: NodePort
+    port: 80
+    nodePort: 30080  # Must be in range 30000-32767
+
+  replicaCount: 1
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Backend configuration
+backend:
+  image:
+    repository: todo-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  replicaCount: 1
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "300m"
+    limits:
+      memory: "1Gi"
+      cpu: "700m"
+
+# Database URL (should be provided as secret)
+database:
+  url: ""  # Should be provided as a secret
+
+# Configuration values
+config:
+  appName: "Todo Application API"
+  debug: "true"
+  environment: "development"
+  logLevel: "INFO"
+  logFile: "logs/app.log"
+
+# Secrets (should be provided separately)
+secrets:
+  # These values should be provided during installation
+  databaseUrl: ""
+  secretKey: ""
+  betterAuthSecret: ""
+  cohereApiKey: ""
+
+# AI Operations labels
+ai:
+  monitored: "true"

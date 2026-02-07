@@ -50,7 +50,7 @@ class ChatSession(ChatSessionBase, table=True):
 
     # Relationships
     user: Optional["User"] = Relationship(back_populates="chat_sessions")
-    messages: List["ChatMessage"] = Relationship(back_populates="session", cascade_delete=True)
+    messages: List["ChatMessage"] = Relationship(back_populates="session")
 
 
 # Add relationships to User model
