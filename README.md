@@ -1,10 +1,60 @@
-# Todo Chatbot Application
-
-An advanced, full-stack web application with Next.js frontend, FastAPI backend, PostgreSQL database, JWT-based authentication, and AI-powered chatbot capabilities.
+# AI-Native Todo Application
 
 ## Overview
 
-This application allows users to register accounts, log in securely, and manage their personal tasks. The system enforces data isolation so users can only access their own tasks. The application features a modern UI with responsive design, advanced task management capabilities, comprehensive security measures, and an AI-powered chatbot for natural language task management.
+This is a full-stack AI-powered todo application featuring:
+- Frontend: Next.js application
+- Backend: FastAPI application
+- Database: Neon PostgreSQL
+- AI Chatbot: Natural language task management
+
+The application allows users to register accounts, log in securely, and manage their personal tasks. The system enforces data isolation so users can only access their own tasks. The application features a modern UI with responsive design, advanced task management capabilities, comprehensive security measures, and an AI-powered chatbot for natural language task management.
+
+## Kubernetes Deployment
+
+The application can be deployed to Kubernetes using the provided Helm chart.
+
+### Prerequisites
+- Docker
+- Kubernetes cluster (Minikube for local development)
+- Helm 3+
+
+### Local Development with Minikube
+
+1. Start Minikube:
+   ```bash
+   minikube start --memory=4096 --cpus=2
+   ```
+
+2. Set Docker environment:
+   ```bash
+   eval $(minikube docker-env)
+   ```
+
+3. Build Docker images:
+   ```bash
+   # Build frontend
+   docker build -t todo-frontend:latest -f ./frontend/Dockerfile ./frontend
+
+   # Build backend
+   docker build -t todo-backend:latest -f ./backend/Dockerfile ./backend
+   ```
+
+4. Install the Helm chart:
+   ```bash
+   cd helm/todo-chart
+   helm install todo-app .
+   ```
+
+5. Access the application:
+   ```bash
+   minikube service todo-app-frontend --url
+   ```
+
+For detailed deployment instructions, see [docs/infrastructure/deployment-guide.md](docs/infrastructure/deployment-guide.md).
+
+### Configuration
+Sensitive configuration values (database URLs, API keys) should be provided as secrets during Helm installation. See the Helm documentation for details.
 
 ## Architecture
 
@@ -117,6 +167,20 @@ This application allows users to register accounts, log in securely, and manage 
 1. Navigate to the project root: `cd ..`
 2. Build and start services: `docker-compose -f docker-config/docker-compose.yml up --build`
 3. Or for development: `docker-compose -f docker-config/docker-compose.dev.yml up`
+
+### Docker Compose Setup (Simplified)
+
+Alternatively, you can use the simplified docker-compose.yml file in the project root:
+
+1. Navigate to the project root: `cd ..`
+2. Build and start services: `docker-compose up --build`
+3. Access the application at `http://localhost:3000`
+
+The application consists of two main services:
+- **Backend**: FastAPI application running on port 8000
+- **Frontend**: Next.js application running on port 3000
+
+Both services are configured with automatic restart and data persistence.
 
 ### Environment Setup Documentation
 
@@ -284,3 +348,4 @@ The application uses specialized AI agents for various functions, documented in 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+# Kubernetes-Deployment
